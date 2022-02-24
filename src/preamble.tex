@@ -1,0 +1,113 @@
+%%
+%% The main TeX file that is designed to handle all of the actual formatting.
+%%
+
+\documentclass[oneside,11pt, letterpaper]{scrreprt}
+
+% set margins (2cm horizontal, 2.5cm vertical)
+\usepackage[left=2cm, right=2cm, top=2.5cm, bottom=2.5cm]{geometry}
+
+% set default font (Alegreya)
+\usepackage[T1]{fontenc}
+\usepackage{Alegreya} %% Option 'black' gives heavier bold face
+\renewcommand*\oldstylenums[1]{{\AlegreyaOsF #1}}
+
+% text formatting
+\usepackage{relsize}        % access to \smaller and \larger font sizes
+\usepackage{xcolor}         % color text
+\usepackage{soul}           % better underline (\ul) and strikethrough (\st)
+
+% give access to symbols
+\usepackage{wasysym}
+\usepackage{fontawesome5}
+\usepackage{textcomp}
+
+\usepackage{tcolorbox}
+
+\usepackage{changepage, multicol}
+
+% allow Japanese characters
+\usepackage{xeCJK}
+\setCJKmainfont[BoldFont=NotoSansCJKjp-Bold,AutoFakeSlant=0.15]{Noto Sans CJK JP}
+
+\usepackage{ruby}
+\renewcommand\rubysep{.2ex}
+\renewcommand\rubysize{0.6}
+
+% adjust \sim to function as a proper tilde
+% https://tex.stackexchange.com/a/9372
+\newcommand\Tilde{\raise.17ex\hbox{$\scriptstyle\sim$}}
+
+% dramatist
+\usepackage{dramatist}
+\setlength{\CharWidth}{0.4\textwidth}
+\renewcommand{\scenetitlefont}{\scshape\LARGE}
+\renewcommand{\speaksfont}{\bfseries\scshape}
+\newcommand{\continue}[1][0.75cm]{\speaker{\hspace*{#1}}}
+
+% prevent "Scene I" from appearing with the scene titles
+\renewcommand{\scenename}{}
+\renewcommand{\printscenenum}{}
+
+% create a command that can hold the scene title
+% since I can't figure out how to extract it from dramatist
+\providecommand{\SceneName}
+
+% provide a command to be called after the scene declaration
+% to indicate that the listener can be either male or female
+\newcommand{\ffa}[1][1cm]{%
+    \centerline{\faVenusMars\,\textbf{//}\,\faVenusDouble}
+    \vspace*{#1}
+}
+
+\usepackage{enumitem}
+
+% show document information in footer
+\usepackage{fancyhdr}
+\fancypagestyle{chf}{%
+    \fancyhf{} % clear existing defaults
+    \renewcommand{\headrulewidth}{1pt}
+    \renewcommand{\footrulewidth}{1pt}
+    \fancyfoot[L]{\small$\cdot$ \thepage{} $\cdot$}
+    \fancyhead[C]{\scshape\SceneName}
+    \fancyfoot[R]{\small\textbf{Author:} :::AUTHOR:::}
+}
+
+\fancypagestyle{cfirstpage}{%
+    \renewcommand{\headrulewidth}{0pt}
+    \fancyhead[C]{}
+}
+
+\pagestyle{chf}
+
+% quotation environment with vertical line
+\usepackage{etoolbox}
+\usepackage{framed}
+\usepackage[vskip=0pt]{quoting}
+\setlength\OuterFrameSep{0pt}
+\renewenvironment{leftbar}[1][\hsize]
+{%
+    \def\FrameCommand
+    {%
+        {\color{magenta!30!gray}\vrule width 1.3pt}%
+        \hspace{0pt}%must no space.
+        \fboxsep=\FrameSep\colorbox{magenta!10!white}%
+    }%
+    \MakeFramed{\hsize#1\advance\hsize-\width\FrameRestore}%
+}
+{\endMakeFramed}
+
+\newenvironment{qquote}[1][0pt]%
+{\begin{leftbar}[0.8\textwidth]\begin{quoting}[leftmargin=#1]}%
+{\end{quoting}\end{leftbar}}
+
+\newenvironment{dramaquote}%
+{\begin{qquote}[-7mm]\begin{drama}\small}%
+{\end{drama}\end{qquote}}
+
+\newcommand{\atelieritem}[1]{[#1]}
+
+% give better spacing around ellipsis
+\usepackage[xspace]{ellipsis}
+\renewcommand\ellipsisgap{.1em}
+
