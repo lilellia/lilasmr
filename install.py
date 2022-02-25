@@ -1,28 +1,39 @@
 import pathlib
+import shutil
+import stat
 
-# create configuration file
-config_folder = pathlib.Path().home() / '.config' / 'lilasmr'
-config_folder.mkdir(parents=True, exist_ok=True)
-
-config_file = config_folder / 'config.ini'
+# root of this repository
+ROOT = pathlib.Path(__file__).parent
 
 
-with open(config_file, 'w') as c:
-    c.write(f'''\
-[Defaults]
-PDFTitle = @filename
-ScriptAuthor = lilellia
+def is_executable(fp: pathlib.Path) -> bool:
+    """ Return whether the user has execute permissions on the given file. """
+    return bool(fp.stat().st_mode & stat.S_IXOTH)
 
-TeXPreamble = {pathlib.Path().home()}/.local/share/lilasmr/src/preamble.tex
-''')
+
+def main():
+    # create path to config file ($HOME/.local/lilasmr)
+    config_folder = pathlib.Path().home() / '.config' / 'lilasmr'
+    config_folder.mkdir(parents=True, exist_ok=True)
+
+    # copy default configuration file to $CONFIG_FOLDER / config.ini
+    default_config = ROOT / 'static' / 'default-config.ini'
+    shutil.copy(default_config, config_folder / 'config.ini')
+        
+    # copy the executable to $HOME/.local/bin
+    # after ensuring the directory exists
+    bin = pathlib.Path().home() / '.local' / 'bin'
+    bin.mkdir(parents=True, exist_ok=True)
     
-# create the executable
-ex = pathlib.Path().home() / '.local' / 'bin' / 'lilasmr'
-with open(ex, 'w') as f:
-    f.write(f'''\
-#!/bin/sh
+    exec_dest = bin / 'lilasmr'
+    shutil.copy(ROOT / 'static' / 'lilasmr', exec_dest)
 
-python3 $HOME/.local/share/lilasmr/src/render.py "$@"''')
+    print('Install successful.')
+    
+    if not is_executable(exec_dest):
+        print(f'{exec_dest} file is not executable. Run:')
+        print('\tsudo chmod +x ~/.local/bin/lilasmr')
+    
 
-print('Install successful. To have an executable file, run:')
-print('\tsudo chmod +x ~/.local/bin/lilasmr')
+if __name__ == "__main__":
+    main()
