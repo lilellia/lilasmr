@@ -63,9 +63,9 @@ def create_tex_file(
 
     # include the entire preamble
     with open(preamble, "r") as preamble:
-        if title == '$filename':
+        if title == '@filename':
             # create special rule for $filename -> the filename
-            title = tex_files[0].name
+            title = tex_files[0].with_suffix('.pdf').name
         pre = (
             preamble.read()
             .replace(":::TITLE:::", title)

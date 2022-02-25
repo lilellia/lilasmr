@@ -10,7 +10,7 @@ config_file = config_folder / 'config.ini'
 with open(config_file, 'w') as c:
     c.write(f'''\
 [Defaults]
-PDFTitle = $filename
+PDFTitle = @filename
 ScriptAuthor = lilellia
 
 TeXPreamble = {pathlib.Path().home()}/.local/share/lilasmr/src/preamble.tex
