@@ -48,6 +48,38 @@ But on the other hand, even with a separate `main.tex` file handling the format 
 
 That's not... terrible, I suppose? But it's still relatively complicated, and it's hard to share (other than a pdf), which may not be ideal for collaborative editing, or for encouraging other people to get started.
 
+Instead, this project allows me to write it as:
+
+```text
+TITLE: \ruby{イザ\,の\,アトリエ\,〜\,オスリア\,の\,錬金術士〜}{Iza no atorie \Tilde{} Osuria no renkinjutsu-shi \Tilde{}}
+CHARACTERS:
+    - Isa
+    - Listener
+
+===START===
+
+STAGE: TL Note: The title translates to "Atelier Isa: Alchemist of Osuria".
+
+\ffa
+
+STAGE: Night. In a forest away from the town of Osuria. General forest ambience, including a creek, can be heard, along with the eventual steps of \Isa, an alchemist from Osuria. The \Listener sits just off the path, injured and slightly delirious. The nearly-full moon provides light.
+
+ISA: [[as she approaches]] Oh, good evening. I didn't expect to see anyone out here.
+---: [[a beat]] Your clothes are torn... and you look hurt. Is... is everything alright?
+
+STAGE: The \Listener recoils slightly.
+
+LISTENER: [[weakly, softly]] *O-Oh, I...*
+
+ISA: [[gently]] Don't worry. I won't hurt you.
+STAGE: She kneels next to the \Listener.
+---: Are you okay?
+
+STAGE: The \Listener shakes her head and holds out her left arm, revealing a deep gash. It seems fresh. Upon closer inspection, one of her pant legs is darkened with blood.
+
+    ---cut--
+```
+
 **So that's what this project is for.**
 
 ## What does this project do?
