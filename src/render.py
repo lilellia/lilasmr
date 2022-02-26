@@ -50,8 +50,8 @@ def process_command_line() -> argparse.Namespace:
         default=config["Defaults"]["TeXPreamble"],
         help="the preamble file to use",
     )
-    
-    parser.add_argument('-v', '--verbose', action='store_true')
+
+    parser.add_argument("-v", "--verbose", action="store_true")
 
     return parser.parse_args()
 
@@ -63,9 +63,9 @@ def create_tex_file(
 
     # include the entire preamble
     with open(preamble, "r") as preamble:
-        if title == '@filename':
+        if title == "@filename":
             # create special rule for $filename -> the filename
-            title = tex_files[0].with_suffix('.pdf').name
+            title = tex_files[0].with_suffix(".pdf").name
         pre = (
             preamble.read()
             .replace(":::TITLE:::", title)
@@ -102,7 +102,7 @@ def render_pdf(tex: pathlib.Path, verbose: bool = False):
     # clean up the directory
     # latexmk = ["latexmk", "-c"]
     # subprocess.run(latexmk)
-    
+
     os.chdir(cwd)
 
 
@@ -116,7 +116,7 @@ def main():
     # process the .asmr files
     for f in args.files:
         tex = latexify(f)
-        with open(lilasmr / 'staging' / (f.stem + '.tex'), 'w') as q:
+        with open(lilasmr / "staging" / (f.stem + ".tex"), "w") as q:
             q.write(tex)
 
     # create the main.tex file
@@ -129,9 +129,9 @@ def main():
 
     # render it to main.tex
     render_pdf(main_tex, verbose=args.verbose)
-    
+
     # move the pdf to the desired location
-    shutil.move(lilasmr / 'staging' / 'main.pdf', args.output.resolve())
+    shutil.move(lilasmr / "staging" / "main.pdf", args.output.resolve())
 
 
 if __name__ == "__main__":

@@ -46,34 +46,38 @@ def split_file(asmr: pathlib.Path):
         if not line.strip():
             # ignore blank lines
             continue
-        if re.fullmatch(r'\s*===START===\s*', line):
+        if re.fullmatch(r"\s*===START===\s*", line):
             ptr = body
             continue
         ptr.append(line)
 
     return header, body
 
+
 def process_header(header: list):
-    data = dict(title='', characters={})
-    
+    data = dict(title="", characters={})
+
     char_flag = False
     for i, line in enumerate(header):
-        if line.startswith('TITLE:'):
-            data['title'] = line[7:]
+        if line.startswith("TITLE:"):
+            data["title"] = line[7:]
             continue
 
-        if line.startswith('CHARACTERS:'):
+        if line.startswith("CHARACTERS:"):
             char_flag = True
             continue
 
         if char_flag:
-            match = re.match(r'\s+- (.*)', line)
+            match = re.match(r"\s+- (.*)", line)
             if match is None:
-                raise ValueError(f'[line {i+1}] expecting character definition, instead found {line!r}')
+                raise ValueError(
+                    f"[line {i+1}] expecting character definition, instead found {line!r}"
+                )
             char = match.group(1)
-            data['characters'][char.upper()] = char
-            
+            data["characters"][char.upper()] = char
+
     return data
+
 
 def process_body(body: list, characters: dict):
     lines = []
@@ -83,24 +87,24 @@ def process_body(body: list, characters: dict):
             # skip blank lines
             continue
 
-        match = re.match(r'([A-Z]+|-+):\s*(.*)', line)
+        match = re.match(r"([A-Z]+|-+):\s*(.*)", line)
         if match:
             char, dialogue = match.groups()
-            
-            if char == 'STAGE':
+
+            if char == "STAGE":
                 # a stage direction
-                lines.append(latexcmd('StageDir', dialogue))
+                lines.append(latexcmd("StageDir", dialogue))
                 continue
             elif char in characters.keys():
                 # spoken dialogue
                 v = characters[char]
-                lines.append(latexcmd(f'{v}speaks', dialogue))
+                lines.append(latexcmd(f"{v}speaks", dialogue))
                 continue
-            elif set(char) == {'-'}:
+            elif set(char) == {"-"}:
                 # a continued line, defined by any number of - characters
-                lines.append(latexcmd('continue', dialogue))
+                lines.append(latexcmd("continue", dialogue))
                 continue
-        
+
         # otherwise, allow the line to pass through, unaltered
         lines.append(line)
 
@@ -112,27 +116,27 @@ def latexify(asmr: pathlib.Path):
     output = StringIO()
 
     header, body = split_file(asmr)
-    
+
     # process the header
     proc = process_header(header)
-    title = proc['title']
-    characters = proc['characters']
-    
+    title = proc["title"]
+    characters = proc["characters"]
+
     # write the header information
-    output.writeline(latexcmd('renewcommand', '\\SceneName', title))
-    output.writeline(latexcmd('thispagestyle', 'cfirstpage'))
+    output.writeline(latexcmd("renewcommand", "\\SceneName", title))
+    output.writeline(latexcmd("thispagestyle", "cfirstpage"))
     for ch in characters.values():
-        output.writeline(latexcmd('Character', ch, ch))
+        output.writeline(latexcmd("Character", ch, ch))
 
     # open the drama environment
-    output.writeline(latexcmd('begin', 'drama'))
-    output.writeline(latexcmd('item', '\\scene[\\SceneName]'))
-    
+    output.writeline(latexcmd("begin", "drama"))
+    output.writeline(latexcmd("item", "\\scene[\\SceneName]"))
+
     for line in process_body(body, characters):
         output.writeline(line)
-    
+
     # close the drama environment
-    output.writeline(latexcmd('end', 'drama'))
+    output.writeline(latexcmd("end", "drama"))
 
     s = prettify(output.contents)
     return s
@@ -141,23 +145,23 @@ def latexify(asmr: pathlib.Path):
 def prettify(script: str) -> str:
     def repl(cmd):
         return lambda match: latexcmd(cmd, match.group(1))
-    
+
     # ... -> \ldots
-    script = script.replace('...', '\\ldots')
-    script = re.sub(r'ldots([A-Za-z0-9])', 'ldots{}\g<1>', script)
-    
+    script = script.replace("...", "\\ldots")
+    script = re.sub(r"ldots([A-Za-z0-9])", "ldots{}\g<1>", script)
+
     # use standard markdown (* for italics, ** for bold, __ for underline, ~~ for strikethrough)
-    script = re.sub(r'\*(.*?)\*', repl('textit'), script)
-    script = re.sub(r'\*\*(.*?)\*\*', repl('textbf'), script)
-    script = re.sub(r'__(.*?)__', repl('ul'), script)
-    script = re.sub(r'~~(.*?)~~', repl('st'), script)
-    
+    script = re.sub(r"\*(.*?)\*", repl("textit"), script)
+    script = re.sub(r"\*\*(.*?)\*\*", repl("textbf"), script)
+    script = re.sub(r"__(.*?)__", repl("ul"), script)
+    script = re.sub(r"~~(.*?)~~", repl("st"), script)
+
     # convert [[s]] to \direct{s}
-    script = re.sub(r'\[\[(.*?)\]\]', repl('direct'), script)
-    
+    script = re.sub(r"\[\[(.*?)\]\]", repl("direct"), script)
+
     # convert "ABC" to ``ABC''
     script = re.sub(r'"(.*?)"', r"``\g<1>''", script)
-    
+
     return script
 
 
