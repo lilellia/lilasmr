@@ -1,4 +1,4 @@
-#!/usr/sh
+#!/bin/sh
 
 # simply call the Python rendering script
 python3 $HOME/.local/share/lilasmr/src/render.py "$@"

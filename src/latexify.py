@@ -5,7 +5,7 @@ import re
 import io
 import sys
 
-logging.basicConfig(level=logging.DEBUG)
+from . import utils
 
 
 class StringIO(io.StringIO):
@@ -40,16 +40,10 @@ def latexcmd(cmd: str, *args: str) -> str:
 
 
 def split_file(asmr: pathlib.Path):
-    header, body = [], []
-    ptr = header
-    for line in asmr.read_text().splitlines():
-        if not line.strip():
-            # ignore blank lines
-            continue
-        if re.fullmatch(r"\s*===START===\s*", line):
-            ptr = body
-            continue
-        ptr.append(line)
+    """Split the .asmr file into its two components, using the ===START=== tag as divider."""
+
+    dividing = lambda line: re.fullmatch(r"\s*===START===\s*", line)
+    header, _, body = utils.split_iterable(dividing, asmr.read_text().splitlines())
 
     return header, body
 
@@ -151,20 +145,20 @@ def prettify(script: str) -> str:
     script = re.sub(r"ldots([A-Za-z0-9])", "ldots{}\g<1>", script)
 
     # use standard markdown (* for italics, ** for bold, __ for underline, ~~ for strikethrough)
-    script = re.sub(r"\*(.*?)\*", repl("textit"), script)
-    script = re.sub(r"\*\*(.*?)\*\*", repl("textbf"), script)
-    script = re.sub(r"__(.*?)__", repl("ul"), script)
-    script = re.sub(r"~~(.*?)~~", repl("st"), script)
-
-    # convert [[s]] to \direct{s}
-    script = re.sub(r"\[\[(.*?)\]\]", repl("direct"), script)
-
-    # convert "ABC" to ``ABC''
-    script = re.sub(r'"(.*?)"', r"``\g<1>''", script)
+    script = utils.chain_sub(
+        script,
+        #   **abc** for bold
+        (r"\*\*(.*?)\*\*", repl("textbf")),
+        #   *abc* for italic
+        (r"\*(.*?)\*", repl("textit")),
+        #   __abc__ for underline
+        (r"__(.*?)__", repl("ul")),
+        #   ~~abc~~ for strikethrough
+        (r"~~(.*?)~~", repl("st")),
+        #   [[abc]] for stage directions
+        (r"\[\[(.*?)\]\]", repl("direct")),
+        #   convert "abc" to ``abc''
+        (r'"(.*?)"', r"``\g<1>''"),
+    )
 
     return script
-
-
-if __name__ == "__main__":
-    p = pathlib.Path(__file__).parent.parent / "iza-no-atorie-1.asmr"
-    print(latexify(p))
