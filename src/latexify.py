@@ -81,7 +81,7 @@ def process_body(body: list, characters: dict):
             # skip blank lines
             continue
 
-        match = re.match(r"([A-Z]+|-+):\s*(.*)", line)
+        match = re.match(r"\s*([A-Z]+|-+):\s*(.*)", line)
         if match:
             char, dialogue = match.groups()
 
