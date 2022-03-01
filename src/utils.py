@@ -18,7 +18,7 @@ def split_iterable(pred: Callable[[T], bool], it: Iterable[T]) -> Tuple[Tuple[T]
         (5, 6, 7, 8, 9)
     """
     it = iter(it)
-    before = itertools.takewhile(lambda x: not pred(x))
+    before = itertools.takewhile(lambda x: not pred(x), it)
     
     return tuple(before), next(it, None), tuple(it)
 

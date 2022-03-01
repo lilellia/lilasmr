@@ -1,11 +1,8 @@
-import itertools
-import logging
 import pathlib
 import re
 import io
-import sys
 
-from . import utils
+import utils
 
 
 class StringIO(io.StringIO):
@@ -53,6 +50,9 @@ def process_header(header: list):
 
     char_flag = False
     for i, line in enumerate(header):
+        if not line.strip():
+            continue
+    
         if line.startswith("TITLE:"):
             data["title"] = line[7:]
             continue
