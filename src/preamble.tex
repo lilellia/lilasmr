@@ -54,11 +54,26 @@
 \providecommand{\SceneName}
 
 % provide a command to be called after the scene declaration
-% to indicate that the listener can be either male or female
-\newcommand{\ffa}[1][1cm]{%
-    \centerline{\faVenusMars\,\textbf{//}\,\faVenusDouble}
+% to indicate the genders of the speaker/listener
+% e.g., "\genders FF" will create "F×F"
+\newcommand{\genders}[3][1cm]{%
+    \centerline{\scshape #2×#3}
     \vspace*{#1}
 }
+
+% also provide symbol versions for some preselected options
+\newcommand{\gendersSymbol}[2]{\centerline{#2}\vspace*{#1}}
+
+% NB: fontawesome only provides the one venus/mars glyph, so there's
+% no distinction between M4F and F4M
+\newcommand{\gendersFforM}[1][1cm]{\gendersSymbol{#1}{\faVenusMars}}
+\newcommand{\gendersMforF}[1][1cm]{\gendersSymbol{#1}{\faVenusMars}}
+
+\newcommand{\gendersMforM}[1][1cm]{\gendersSymbol{#1}{\faMarsDouble}}
+\newcommand{\gendersFforF}[1][1cm]{\gendersSymbol{#1}{\faVenusDouble}}
+
+\newcommand{\gendersFforA}[1][1cm]{\gendersSymbol{#1}{\faVenusMars・\faVenusDouble}}
+\newcommand{\gendersMforA}[1][1cm]{\gendersSymbol{#1}{\faVenusMars・\faMarsDouble}}
 
 \usepackage{enumitem}
 
