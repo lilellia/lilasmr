@@ -57,6 +57,10 @@ def process_header(header: list):
             data["title"] = line[7:]
             continue
 
+        if line.startswith('COMMENT:') or line.startswith('//'):
+            # ignore comment lines
+            continue
+
         if line.startswith("CHARACTERS:"):
             char_flag = True
             continue
@@ -79,6 +83,10 @@ def process_body(body: list, characters: dict):
     for line in body:
         if not line.strip():
             # skip blank lines
+            continue
+        
+        if line.startswith('COMMENT:') or line.startswith('//'):
+            # ignore comment lines
             continue
 
         match = re.match(r"\s*([A-Z]+|-+):\s*(.*)", line)
